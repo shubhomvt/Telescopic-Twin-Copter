@@ -1,14 +1,14 @@
 
 /*ESC calibration sketch for bicopter
- * I am using arduino nano 
- * Sinal pin is connected to pin A0
+   I am using arduino nano
+   Sinal pin is connected to pin A0
 */
 #include <Servo.h>
 #define minvalue 1000
 #define maxvalue 2000
 #define motor1_pin A0
 int time1 = 1000;
-Servo motor1;   
+Servo motor1;
 void setup() {
   Serial.begin(9600);
   Serial.println("Program will test the ESC.");
@@ -19,7 +19,7 @@ void setup() {
   Serial.println("Press Any key \n ");
   motor1.writeMicroseconds(maxvalue);
   //Read the inputs
-  while(!Serial.available());
+  while (!Serial.available());
   Serial.read();
   Serial.print("Sending maximum value to calibrate :");
   Serial.print("\n");
@@ -39,17 +39,17 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-    if (Serial.available() > 0)
+  if (Serial.available() > 0)
   {
     int time1 = Serial.parseInt();
     if (time1 > 999)
     {
-      
+
       motor1.writeMicroseconds(time1);
-      float speed_motor1 = (time1-1000)/10;
+      float speed_motor1 = (time1 - 1000) / 10;
       Serial.print("\n");
-      Serial.println("Motor speed:"); Serial.print("  "); Serial.print(speed_motor1); 
-    }     
+      Serial.println("Motor speed:"); Serial.print("  "); Serial.print(speed_motor1);
+    }
   }
 
 }
