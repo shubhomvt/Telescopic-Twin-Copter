@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <Servo.h>
 #include <MPU6050_tockn.h>
+#include "RC.hpp"
 MPU6050 imu(Wire);
 Servo lmotor,rmotor;
 float Kp[]={0,0,0,0};
@@ -14,11 +15,17 @@ float error_diff[]={0,0,0};
 float sampletime,prevtime,prestime,diffrtime;
 float desiredangle[]={};
 float preverror[]={0,0,0,0};
-long timer = 0;
+long timer_a = 0;
 float throttle1,throttle2;
 float b[3],Angle[3];
 float out[3]={0,0,0};
 int fla=0,i;
+RC Throttle_1(2); // Setup pin 2 for input
+RC  Yaw_1(3); // Setup pin 3 for input
+RC Pitch_1(18); // Setup pin 18 for input
+RC roll_1(19); // Setup pin 19 for input
+RC ch5(20); // Setup pin 20 for input
+RC ch6(21); // Setup pin 21 for input
 void setup() {
   Serial.begin(9600);
   Wire.begin();
@@ -28,6 +35,13 @@ void setup() {
   lmotor.writeMicroseconds(1000);
   rmotor.attach(4);
   rmotor.writeMicroseconds(1000);
+  Throttle_1.begin(true); // ch1 on pin 2 reading RC HIGH duration
+  Yaw_1.begin(true); // ch2 on pin 3 reading RC HIGH duration
+  Pitch_1.begin(true); // ch3 on pin 18 reading RC HIGH duration
+  roll_1.begin(true); // ch4 on pin 19 reading RC HIGH duration
+  ch5.begin(true); // ch5 on pin 20 reading RC HIGH duration
+  ch6.begin(true); // ch6 on pin 21 reading RC HIGH duration
+
 }
 
 void loop() {
@@ -50,7 +64,7 @@ void loop() {
   diffrtime=(prestime-prevtime)/1000;
   //float corr[3]={imu.getAngleX(),0,0};
   
-   if(millis() - timer > 1000){
+   if(millis() - timer_a > 1000){
      for(int i=0;i<20;i++){
         Angle[0]+=imu.getAngleX();
         Angle[1]+=imu.getAngleY();
