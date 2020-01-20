@@ -1,5 +1,6 @@
 #include <Servo.h>
 Servo motor1
+Servo motor2
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
