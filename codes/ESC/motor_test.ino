@@ -5,7 +5,8 @@ void setup() {
   Serial.begin(9600);
   motor1.attach(D2);
   motor2.attach(D3);
-  motor.writeMicroseconds(1000);
+  motor1.writeMicroseconds(1000);
+  motor2.writeMicroseconds(1000);
   
 
 }
