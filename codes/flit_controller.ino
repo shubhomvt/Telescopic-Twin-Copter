@@ -51,13 +51,13 @@ void loop() {
   //float corr[3]={imu.getAngleX(),0,0};
   
    if(millis() - timer > 1000){
-     for(int i=0;i<20;i++){
+     for(int i=0;i<50;i++){
         Angle[0]+=imu.getAngleX();
         Angle[1]+=imu.getAngleY();
         Angle[2]+=imu.getAngleZ();
        }
       for(int i=0;i<3;i++){
-       Angle[i]=(Angle[i]/20)-b[i];
+       Angle[i]=(Angle[i]/50)-b[i];
       }
       for(i=0;i<3;i++){
       error[i]= Angle[i]- desiredangle[i];
