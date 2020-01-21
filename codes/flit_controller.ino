@@ -37,14 +37,14 @@ void loop() {
   prestime=millis();
   if(fla==0){
     //a[3]={imu.getAngleX(),imu.getAngleY(),getAngleZ()};
-     for(int i=0;i<20;i++){
+     for(int i=0;i<50;i++){
       b[0]+=imu.getAngleX();
       b[1]+=imu.getAngleY();
       b[2]+=imu.getAngleZ();
     }
-    b[0]=b[0]/20;
-    b[1]=b[1]/20;
-    b[2]=b[2]/20;
+    b[0]=b[0]/50;
+    b[1]=b[1]/50;
+    b[2]=b[2]/50;
     fla=1;
   }
   diffrtime=(prestime-prevtime)/1000;
