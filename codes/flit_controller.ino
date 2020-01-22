@@ -58,8 +58,9 @@ void loop() {
        }
       for(int i=0;i<3;i++){
        Angle[i]=(Angle[i]/50)-b[i];
+        Serial.println(Angle[i]);
       }
-      for(i=0;i<3;i++){
+     /* for(i=0;i<3;i++){
       error[i]= Angle[i]- desiredangle[i];
       error_diff[i]= ((error[i]-preverror[i])/sampletime);
       error_sum[i]+= error[i]*sampletime;
@@ -83,7 +84,7 @@ void loop() {
         throttle2=minspeed[0];
       }
       lmotor.writeMicroseconds(throttle1);
-      rmotor.writeMicroseconds(throttle2);
+      rmotor.writeMicroseconds(throttle2);*/
       
       
       
@@ -91,7 +92,7 @@ void loop() {
       
    
 
-    Serial.println(Angle[2]);
+    //Serial.println(Angle[2]);
     //Serial.println(imu.getAngleX());
 
  }
