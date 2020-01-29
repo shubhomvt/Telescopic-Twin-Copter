@@ -65,10 +65,12 @@ void loop() {
       error_diff[i]= ((error[i]-preverror[i])/sampletime);
       error_sum[i]+= error[i]*sampletime;
       preverror[i]=error[i];
+        
       out[i]= (Kp[i]*error[i])+(Ki[i]*error_sum[i])+(Kd[i]*error_diff[i]);
       
       throttle1=1500+out[i];
       throttle2=1500-out[i];
+      }
       
       
       if(throttle1>maxspeed[i]){
@@ -96,7 +98,7 @@ void loop() {
     //Serial.println(Angle[2]);
     //Serial.println(imu.getAngleX());
 
- }
+ 
 
 
 }
