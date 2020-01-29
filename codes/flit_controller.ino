@@ -73,16 +73,16 @@ void loop() {
       }
       
       
-      if(throttle1>maxspeed[i]){
+      if(throttle1>maxspeed[0]){
         throttle1=maxspeed[i];
       }
-      if(throttle1<minspeed[i]){
+      if(throttle1<minspeed[1]){
         throttle1=minspeed[i];
       }
-      if(throttle2>maxspeed[i]){
+      if(throttle2>maxspeed[0]){
         throttle2=maxspeed[i];
       }
-      if(throttle2<minspeed[i]){
+      if(throttle2<minspeed[1]){
         throttle2=minspeed[i];
       }
       lmotor.writeMicroseconds(throttle1);
