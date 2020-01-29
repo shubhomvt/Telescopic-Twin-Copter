@@ -60,31 +60,32 @@ void loop() {
        Angle[i]=(Angle[i]/50)-b[i];
         Serial.println(Angle[i]);
       }
-     /* for(i=0;i<3;i++){
+      for(i=0;i<3;i++){
       error[i]= Angle[i]- desiredangle[i];
       error_diff[i]= ((error[i]-preverror[i])/sampletime);
       error_sum[i]+= error[i]*sampletime;
       preverror[i]=error[i];
       out[i]= (Kp[i]*error[i])+(Ki[i]*error_sum[i])+(Kd[i]*error_diff[i]);
-      }
-      throttle1=1500+out[0];
-      throttle2=1500-out[0];
+      
+      throttle1=1500+out[i];
+      throttle2=1500-out[i];
       
       
-      if(throttle1>maxspeed[0]){
-        throttle1=maxspeed[0];
+      if(throttle1>maxspeed[i]){
+        throttle1=maxspeed[i];
       }
-      if(throttle1<minspeed[0]){
-        throttle1=minspeed[0];
+      if(throttle1<minspeed[i]){
+        throttle1=minspeed[i];
       }
-      if(throttle2>maxspeed[0]){
-        throttle2=maxspeed[0];
+      if(throttle2>maxspeed[i]){
+        throttle2=maxspeed[i];
       }
-      if(throttle2<minspeed[0]){
-        throttle2=minspeed[0];
+      if(throttle2<minspeed[i]){
+        throttle2=minspeed[i];
       }
       lmotor.writeMicroseconds(throttle1);
-      rmotor.writeMicroseconds(throttle2);*/
+      rmotor.writeMicroseconds(throttle2);
+      }
       
       
       
