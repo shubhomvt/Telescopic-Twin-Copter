@@ -1,0 +1,34 @@
+#include "RC.hpp"
+#include <Servo.h>
+Servo motor1;
+Servo motor2;
+Servo myservo1;//right 125 degree
+Servo myservo2;
+RC ch3(2); // Setup pin 2 for input
+int pos1 = 125;// right motor
+int pos2 = 90;// right motor
+void setup() {
+    Serial.begin(9600); // Serial for debug
+    ch3.begin(true); // ch3 on pin 18 reading RC HIGH duration
+    motor1.attach(3);
+    motor2.attach(5);
+    motor1.writeMicroseconds(1000);
+    motor2.writeMicroseconds(1000);
+    myservo1.attach(9);
+    myservo2.attach(6);
+}
+
+void loop() {
+    myservo1.write(pos1);              // tell servo to go to position in variable 'pos'
+    delay(15); 
+    myservo2.write(pos2);
+    delay(15);
+   int speed1=ch3.Value();
+    Serial.println(speed1);
+   int speed2=map(speed1,860,1880,1000,2000);
+   //Serial.println(speed2);
+   motor1.writeMicroseconds(speed2+300);
+   motor2.writeMicroseconds(speed2-20);
+   //Serial.println(speed2);
+   delay(100);
+}
