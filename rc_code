@@ -20,7 +20,7 @@ float minspeed[]={1100,1100,1100};
 float error[]={0,0,0};
 float error_sum[]={0,0,0};
 float error_diff[]={0,0,0};
-float sampletime=0;
+float sampletime=0.01;
 float prevtime=0;
 float prestime=0;
 float desiredangle[]={};
@@ -59,7 +59,7 @@ void setup() {
 void loop() {
      /* digitalWrite(7,HIGH);
    digitalWrite(8,HIGH);
-  
+  sa
     
    int speed1=ch3.Value();
    Serial.println(speed1);
@@ -95,7 +95,7 @@ void loop() {
   }
   //diffrtime=(prestime-prevtime)/1000;
   //float corr[3]={imu.getAngleX(),0,0};
-  sampletime=(prestime-prevtime)/1000;
+  
    if(millis() - timer1 > 1000){
      for(int i=0;i<3;i++){
        Angle[i]=0;
