@@ -1,0 +1,176 @@
+#include "RC.hpp"
+#include <Servo.h>
+#include <Wire.h>
+#include <Servo.h>
+#include <MPU6050_tockn.h>
+MPU6050 imu(Wire);
+Servo motor1;
+Servo motor2;
+Servo myservo1;//right 125 degree
+Servo myservo2;
+RC ch3(2); // Setup pin 2 for input
+int pos1 = 132;// right motor
+int pos2 = 90;// right motor
+
+float Kp[]={0.95,0,0,0};
+float Ki[]={0.045,0,0,0};
+float Kd[]={1.5,0,0,0};
+float maxspeed[]={1400,1400,1400};
+float minspeed[]={1100,1100,1100};
+float error[]={0,0,0};
+float error_sum[]={0,0,0};
+float error_diff[]={0,0,0};
+float sampletime=0;
+float prevtime=0;
+float prestime=0;
+float desiredangle[]={};
+float preverror[]={0,0,0,0};
+long timer1 = 0;
+float throttle1=0.00;
+float throttle2=0.00;
+float b[3]={0,0,0};
+float Angle[3]={0,0,0};
+float out[3]={0,0,0};
+int fla=0,i;
+
+void setup() {
+    Serial.begin(9600); // Serial for debug
+    ch3.begin(true); // ch3 on pin 18 reading RC HIGH duration
+    motor1.attach(3);
+    motor2.attach(5);
+    motor1.writeMicroseconds(1000);
+    motor2.writeMicroseconds(1000);
+    myservo1.attach(9);
+    myservo2.attach(6);
+    pinMode(7,OUTPUT);
+    pinMode(8,OUTPUT);
+    digitalWrite(7,HIGH);
+   digitalWrite(8,HIGH);
+   myservo1.write(pos1);              // tell servo to go to position in variable 'pos'
+    delayMicroseconds(15); 
+    myservo2.write(pos2);
+    delayMicroseconds(15);
+    Wire.begin();
+  imu.begin();
+  imu.calcGyroOffsets(true);
+  delay(1000);
+}
+
+void loop() {
+     /* digitalWrite(7,HIGH);
+   digitalWrite(8,HIGH);
+  
+    
+   int speed1=ch3.Value();
+   Serial.println(speed1);
+   int speed2=map(speed1,1000,2000,1000,2000);
+   //Serial.println(speed2);
+   if(speed1>1500)
+   {
+    speed1=1500;
+   }
+   motor1.writeMicroseconds(speed1);
+   motor2.writeMicroseconds(speed1);
+   //Serial.println(speed2);
+   delay(100);*/
+   int speed1=1250;
+   
+   // int speed2=map(speed1,1000,2000,1000,2000);
+    imu.update();
+    prevtime = prestime;
+    prestime=millis();
+   if(fla==0){
+    //a[3]={imu.getAngleX(),imu.getAngleY(),getAngleZ()};
+    delay(2000);
+     for(int i=0;i<200;i++){
+      b[1]+=imu.getAngleX();
+      b[0]+=imu.getAngleY();
+      b[2]+=imu.getAngleZ();
+    }
+    b[0]=b[0]/200;
+    b[1]=b[1]/200;
+    b[2]=b[2]/200;
+    fla=1;
+    
+  }
+  //diffrtime=(prestime-prevtime)/1000;
+  //float corr[3]={imu.getAngleX(),0,0};
+  sampletime=(prestime-prevtime)/1000;
+   if(millis() - timer1 > 1000){
+     for(int i=0;i<3;i++){
+       Angle[i]=0;
+       //delay(1000);
+       //Serial.println(Angle[i]);
+       //Serial.println(" ----------------- ");
+      }
+      Angle[1]+=imu.getAngleX();
+        Angle[0]+=imu.getAngleY();
+        Angle[2]+=imu.getAngleZ();
+     /*for(int i=0;i<20;i++){
+        Angle[0]+=imu.getAngleX();
+        Angle[1]+=imu.getAngleY();
+        Angle[2]+=imu.getAngleZ();
+       }
+       Angle[0]/=20;
+       Angle[1]/=20;
+       Angle[2]/=20;*/
+      for(int i=0;i<3;i++){
+       Angle[i]=(Angle[i])-b[i];
+       //delay(1000);
+       //Serial.println(Angle[i]);
+       //Serial.println(" ----------------- ");
+      }
+      //for(i=0;i<3;i++){
+      error[0]= Angle[0]- b[0];
+      error_diff[0]= ((error[0]-preverror[0])/sampletime);
+      error_sum[0]+= error[0]*sampletime;//int
+      preverror[0]=error[0];
+      out[0]= (Kp[0]*error[0])+(Ki[0]*error_sum[0])+(Kd[0]*error_diff[0]);
+      //}
+       /*Serial.println("-----------");
+      Serial.println(Kp[0]);
+      Serial.println("-----------");
+      Serial.println(Ki[0]);
+       Serial.println("-----------");
+      Serial.println(Kd[0]);
+       Serial.println("-----------");*/
+       Serial.print("error_sum=");
+      Serial.println(error_sum[0]);
+      Serial.print("error_diff=");
+      Serial.println(error_diff[0]);
+      //Serial.println(out[0]);
+      throttle1=speed1+-out[0];
+      throttle2=speed1+25+out[0];
+      
+      
+      if(throttle1>maxspeed[0]){
+        throttle1=maxspeed[0];
+      }
+      if(throttle1<minspeed[0]){
+        throttle1=minspeed[0];
+      }
+      if(throttle2>maxspeed[0]){
+        throttle2=maxspeed[0];
+      }
+      if(throttle2<minspeed[0]){
+        throttle2=minspeed[0];
+      }
+      motor1.writeMicroseconds(throttle1);
+      motor2.writeMicroseconds(throttle2);
+      
+      
+      
+      
+      
+   
+    Serial.print("Angle=");
+    Serial.println(Angle[0]);
+    //Serial.print(speed1);
+
+    Serial.println(throttle1);
+    Serial.println(throttle2);
+    //delay(800);
+    //Serial.println(imu.getAngleX());
+
+ }
+}
