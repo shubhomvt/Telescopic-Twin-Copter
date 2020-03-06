@@ -8,19 +8,20 @@ Servo motor1;
 Servo motor2;
 Servo myservo1;//right 125 degree
 Servo myservo2;
-RC ch3(2); // Setup pin 2 for input
+RC ch3(3); // Setup pin 2 for input
+RC ch2(2);
 int pos1 = 132;// right motor
 int pos2 = 90;// right motor
 
-float Kp[]={0.08,0,0,0};
+float Kp[]={0.08,0.05,0,0};
 float Ki[]={0,0,0,0};
-float Kd[]={0.007,0,0,0};
-float maxspeed[]={1700,40,1600};
-float minspeed[]={1100,-40,1100};
+float Kd[]={0.009,0,0,0};
+float maxspeed[]={1700,172,130};
+float minspeed[]={1100,92,50};
 float error[]={0,0,0};
 float error_sum[]={0,0,0};
 float error_diff[]={0,0,0};
-float sampletime=1;
+float sampletime=10;
 float prevtime=0;
 float prestime=0;
 float desiredangle[]={};
@@ -36,7 +37,8 @@ float des_ang[3]={0,0,0};
 void setup() {
     Serial.begin(9600); // Serial for debug
     ch3.begin(true); // ch3 on pin 18 reading RC HIGH duration
-    motor1.attach(3);
+    ch2.begin(true);
+    motor1.attach(4);
     motor2.attach(5);
     motor1.writeMicroseconds(1000);
     motor2.writeMicroseconds(1000);
@@ -57,7 +59,7 @@ void setup() {
 }
 
 void loop() {
-     
+        
    int speed1=1290;//speeeeeeeeeeeeeeeeed
    imu.update();
   
@@ -77,16 +79,17 @@ void loop() {
   do{
     // Serial.println(millis()- prestime);
   }while((millis()- prestime)<sampletime);
-  for (int j=0;j<=20;j++){
+  
+      float  diff_time=(millis()-prestime)/1000;
+      prestime=millis();
+  for (int j=0;j<20;j++){
       Angle[1]+=imu.getAngleX();
       Angle[0]+=imu.getAngleY();
       Angle[2]+=imu.getAngleZ();
   }
-  for(int i=0;i<=3;i++){
+  for(int i=0;i<3;i++){
     Angle[i]=Angle[i]/20;
   }
-      float  diff_time=(millis()-prestime)/1000;
-      prestime=millis();
      
       for(int i=0;i<3;i++){
        Angle[i]=(Angle[i])-b[i];
@@ -105,20 +108,20 @@ void loop() {
       preverror[i]=error[i];
       out[i]= (Kp[i]*error[i])+(Ki[i]*error_sum[i])+(Kd[i]*error_diff[i]);
       }
-      Serial.println(error[0]);
+     // Serial.println(error[0]);
      
-      Serial.print("difftime");
+     /* Serial.print("difftime");
       Serial.println(diff_time);
       Serial.print("error_sum");
       Serial.println(error_sum[0]);
       Serial.print("error_diff");
-      Serial.println(error_diff[0]);
-      Serial.print("error= ");
-      Serial.println(error[0]);
+      Serial.println(error_diff[0]);*/
+      Serial.print("error1= ");
+      Serial.println(error[1]);
       throttle1=speed1+35-out[0];
       throttle2=speed1+out[0];
       pos1=pos1+out[1];
-      pos2=pos2+out[1];
+      pos2=pos2-out[1];
       if(pos1>maxspeed[1])
       {
       pos1=maxspeed[1];
@@ -127,13 +130,13 @@ void loop() {
       {
       pos1=minspeed[1];
       }
-      if(pos2>maxspeed[1])
+      if(pos2>maxspeed[2])
       {
-      pos2=maxspeed[1];
+      pos2=maxspeed[2];
       }
-      if(pos2<minspeed[1])
+      if(pos2<minspeed[2])
       {
-      pos2=minspeed[1];
+      pos2=minspeed[2];
       }
 
       
@@ -150,12 +153,16 @@ void loop() {
       if(throttle2<minspeed[0]){
         throttle2=minspeed[0];
       }
-      motor1.writeMicroseconds(throttle1);
-     motor2.writeMicroseconds(throttle2); 
+    //  motor1.writeMicroseconds(throttle1);
+    // motor2.writeMicroseconds(throttle2); 
       myservo1.write(pos1); 
-      delayMicroseconds(15);
+     // delayMicroseconds(15);
       myservo2.write(pos2);
-      delayMicroseconds(15);
+    //  delayMicroseconds(15);
+    Serial.print("pos1 ");
+    Serial.print(pos1);
+    Serial.print("pos2 ");
+    Serial.print(pos2);
       
      //delay(2000);
     /*  motor1.writeMicroseconds(1440);
@@ -174,6 +181,4 @@ void loop() {
     Serial.println(throttle2);*/
     //delay(800);
     //Serial.println(imu.getAngleX());
-
- 
 }
