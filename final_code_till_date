@@ -1,0 +1,168 @@
+#include "RC.hpp"
+#include <Wire.h>
+#include <Servo.h>
+#include <MPU6050_tockn.h>
+MPU6050 imu(Wire);
+Servo motor1;
+Servo motor2;
+Servo myservo1;//right 125 degree
+Servo myservo2;
+RC ch3(3); // Setup pin 2 for input
+RC ch2(2);
+
+
+float pos_pitch1 = 132;// right motor
+float pos_pitch2 = 90;// right motor
+float Kp[]={0.08,0.08,0,0};
+float Ki[]={0,0,0,0};
+float Kd[]={0.009,0.005,0,0};
+float maxspeed[]={1700,172,130};
+float minspeed[]={1100,92,50};
+float error[]={0,0,0};
+float error_sum[]={0,0,0};
+float error_diff[]={0,0,0};
+float sampletime=10;
+float prevtime=0;
+float prestime=0;
+float desiredangle[]={};
+float preverror[]={0,0,0,0};
+long timer1 = 0;
+float throttle1=0.00;
+float throttle2=0.00;
+float b[3]={0,0,0};
+float Angle[3]={0,0,0};
+float out[3]={0,0,0};
+int fla=0,i,fla1=0;
+float des_ang[3]={0,0,0};
+
+void setup() {
+    Serial.begin(9600); // Serial for debug
+    ch3.begin(true); // ch3 on pin 18 reading RC HIGH duration
+    ch2.begin(true);
+    
+    motor1.attach(4);
+    motor2.attach(5);
+    motor1.writeMicroseconds(1000);
+    motor2.writeMicroseconds(1000);
+    myservo1.attach(9);
+    myservo2.attach(6);
+    pinMode(0, INPUT);
+   
+   myservo1.write(pos_pitch1);              // tell servo to go to position in variable 'pos'
+    delayMicroseconds(10); 
+    myservo2.write(pos_pitch2);
+    delayMicroseconds(10);
+    Wire.begin();
+  imu.begin();
+  imu.calcGyroOffsets(true);
+  delay(1000);
+}
+
+void loop() {
+        
+   float speed1=ch3.Value();//speeeeeeeeeeeeeeeeed
+   float pitch_val=ch2.Value();
+       des_ang[1]=map(pitch_val,1000,1900,-40,40);
+    
+    float SpeedValue = pulseIn(0, HIGH);
+    Serial.println(SpeedValue);
+  des_ang[0]=map(SpeedValue,1050,1850,-40,40);     
+   imu.update();
+  
+   if(fla==0){
+   
+     for(int i=0;i<180;i++){
+      b[1]+=imu.getAngleX();
+      b[0]+=imu.getAngleY();
+      b[2]+=imu.getAngleZ();
+      }
+    b[0]=b[0]/180;
+    b[1]=b[1]/180;
+    b[2]=b[2]/180;
+    fla=1;
+   
+  }
+  do{
+    
+  }while((millis()- prestime)<sampletime);
+  
+      float  diff_time=(millis()-prestime)/1000;
+      prestime=millis();
+  for (int j=0;j<20;j++){
+      Angle[1]+=imu.getAngleX();
+      Angle[0]+=imu.getAngleY();
+      Angle[2]+=imu.getAngleZ();
+  }
+  for(int i=0;i<3;i++){
+    Angle[i]=Angle[i]/20;
+  }
+     
+      for(int i=0;i<3;i++){
+       Angle[i]=(Angle[i])-b[i];
+       }
+       
+       
+      for(i=0;i<3;i++){
+      error[i]= Angle[i]- des_ang[i];
+      error_diff[i]= ((error[i]-preverror[i])/diff_time);
+      error_sum[i]+= error[i]*diff_time;
+      preverror[i]=error[i];
+      out[i]= (Kp[i]*error[i])+(Ki[i]*error_sum[i])+(Kd[i]*error_diff[i]);
+      }
+     
+     
+     
+      
+      throttle1=speed1+35-out[0];
+      throttle2=speed1+out[0];
+      pos_pitch1=pos_pitch1+out[1];
+      pos_pitch2=pos_pitch2-out[1];
+    
+      if(pos_pitch1>maxspeed[1])
+      {
+      pos_pitch1=maxspeed[1];
+      }
+      if(pos_pitch1<minspeed[1])
+      {
+      pos_pitch1=minspeed[1];
+      }
+      if(pos_pitch2>maxspeed[2])
+      {
+      pos_pitch2=maxspeed[2];
+      }
+      if(pos_pitch2<minspeed[2])
+      {
+      pos_pitch2=minspeed[2];
+      }
+
+      
+      
+      if(throttle1>maxspeed[0]){
+        throttle1=maxspeed[0];
+      }
+      if(throttle1<minspeed[0]){
+        throttle1=minspeed[0];
+      }
+      if(throttle2>maxspeed[0]){
+        throttle2=maxspeed[0];  
+      }
+      if(throttle2<minspeed[0]){
+        throttle2=minspeed[0];
+      }
+
+
+      
+     motor1.writeMicroseconds(throttle1);
+      motor2.writeMicroseconds(throttle2); 
+      myservo1.write(pos_pitch1); 
+      delayMicroseconds(5);
+      myservo2.write(pos_pitch2);
+      delayMicroseconds(5);
+   
+      
+    
+
+  
+}
+
+ 
